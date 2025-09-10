@@ -64,17 +64,6 @@ public class UserAuthorizationTests {
 
 
 
-//    @Test //если авторизоваться под несуществующим пользователем, запрос возвращает ошибку
-//    @DisplayName("Authorization with invalid creds returns 404")
-//    public void courierIncorrectLoginResponse() {
-//        generateFakeCourier();
-//        authorizeWithFakeCredentials()
-//                .then()
-//                .assertThat()
-//                .statusCode(404)
-//                .body("message", equalTo("Учетная запись не найдена"));
-//    }
-
 
     @Test //если авторизоваться под несуществующим пользователем, запрос возвращает ошибку
     @DisplayName("Authorization with invalid creds returns 401")
@@ -93,30 +82,8 @@ public class UserAuthorizationTests {
                 .body("message", equalTo("email or password are incorrect"));
     }
 
-//    @Step("Generate fake courier - with fake credentials to log in")
-//    private Courier generateFakeCourier() {
-//        Faker faker = new Faker();
-//        Faker fakerRU = new Faker(Locale.forLanguageTag("ru"));
-//        String invLogin = faker.bothify("????####");
-//        String invPassword = faker.bothify("????####");
-//        String invFirstName = fakerRU.name().firstName();
-//        Courier invalidCourier = new Courier(invLogin, invPassword, invFirstName);
-//        return invalidCourier;
-//    }
 
-//    @Step("Log in with fake courier/fake credentials")
-//    private Response authorizeWithFakeCredentials()
-//    {
-//        Response response = courierUser.courierAuthorization(
-//                new CourierCreds(generateFakeCourier().getLogin(), generateFakeCourier().getPassword()));
-//        return response;
-//    }
-//
-//    @Step("Delete created courier after test")
-//    private void deleteCourier() {
-//        id = courierUser.courierAuthorization(CourierCreds.getCourierCreds(courier)).as(CourierIdInLoginResponse.class).getId();
-//        courierUser.deleteCourier(id);
-//    }
+
 @After
 public void tearDown() {
 

@@ -53,7 +53,6 @@ public class GetUserOrdersTests {
                 .extract().response();
 
         List<String> ids = resp.jsonPath().getList("data._id");
-//        if (ids == null || ids.size() < count) throw new IllegalStateException("Недостаточно ингредиентов");
         return new ArrayList<>(ids.subList(0, count)); // независимая копия
     }
 
