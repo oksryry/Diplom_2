@@ -1,10 +1,9 @@
-package forUser;
+package steps;
 
 import entities.user.User;
 import entities.user.UserCreds;
 import io.qameta.allure.Step;
 import io.restassured.response.Response;
-
 import static io.restassured.RestAssured.given;
 
 public class UserApi {
@@ -15,6 +14,7 @@ public class UserApi {
 
     private static final String USER_DELETE_URL = "/api/auth/user";
 
+
     @Step("Create unique user")
     public Response createUser(User user) {
         return given()
@@ -24,6 +24,9 @@ public class UserApi {
                 .when()
                 .post(USER_REGISTER_URL);
     }
+
+
+
 
     @Step("Login with created user")
     public Response userAuthorization(UserCreds userCreds) {
@@ -44,11 +47,14 @@ public class UserApi {
                 .post(USER_REGISTER_URL);
     }
 
-    @Step("Delete user")
-    public Response deleteUser(int email) {
+
+    @Step("Delete user by Token")
+    public Response deleteUserByToken(String accessTokenWithBearer) {
         return given()
-                .header("Content-type", "application/json")
+                .header("Authorization", accessTokenWithBearer) // "Bearer ..."
                 .when()
-                .delete(USER_DELETE_URL + ":" + email);
+                .delete(USER_DELETE_URL);
     }
+
+
 }

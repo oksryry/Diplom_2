@@ -1,34 +1,35 @@
-package forUser.UserUpdatesTests;
+package user.updates;
 
-import entities.user.User;
-import entities.user.UserUpdateRequest;
-import forUser.UserApi;
+import entities.user.UserInfo;
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runners.Parameterized;
 import utils.Rules;
-import utils.SetUserParameters;
+import utils.UserRules;
 
 import java.util.Arrays;
 
-import static io.restassured.RestAssured.given;
 import static org.apache.hc.core5.http.HttpStatus.SC_UNAUTHORIZED;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
 public class UserUpdateUnauthorizedTest {
 
-    private final SetUserParameters generator = new SetUserParameters();
-    private final User user = generator.setParameters();
-    private static final UserApi userApi = new UserApi();
 
-    private String accessToken;
+    // настраивает RestAssured.baseURI
+    public final Rules rule = new Rules();
+
+    //создаёт и удаляет пользователя
+    public final UserRules userRules = new UserRules();
 
     @Rule
-    public final Rules rule = new Rules();
+    public final RuleChain chain = RuleChain
+            .outerRule(rule)       // сначала baseURI
+            .around(userRules);    // затем создание пользователя
+
 
     @Parameterized.Parameter(0)
     public String field;
@@ -44,25 +45,19 @@ public class UserUpdateUnauthorizedTest {
 
     }
 
-    @Before
-    public void createUserForAuthorizationTests() {
-        Response response = userApi.createUser(user);
-        accessToken = response.jsonPath().getString("accessToken"); // сохранили токен из успешного запроса на создание юзера
-    }
 
     @Test
     @Description("PATCH /api/auth/user without Authorization returns 401 for any field")
-    public void updateUser_withoutAuth() {
-        UserUpdateRequest upd = new UserUpdateRequest();
-        if ("name".equals(field)) upd.setName(newValue);
+    public void updateUserWithoutAuthTest() {
+        // Формируем тело PATCH только с одним полем (NON_NULL => уйдёт только оно)
+        UserInfo upd = new UserInfo();
+        if ("name".equals(field))  upd.setName(newValue);
         if ("email".equals(field)) upd.setEmail(newValue);
 
-        given()
-                .header("Content-Type", "application/json")
-                .body(upd)
-                .when()
-                .patch("/api/auth/user")
-                .then()
+        Response resp = userRules.steps().updateUserUnauthorized(upd);
+
+
+        resp.then()
                 .statusCode(SC_UNAUTHORIZED)
                 .body("success", is(false))
                 .body("message", equalTo("You should be authorised"));

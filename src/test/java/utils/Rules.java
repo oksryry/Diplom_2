@@ -13,4 +13,6 @@ public class Rules extends ExternalResource {
         appConfig = ConfigFactory.create(AppConfig.class);
         RestAssured.baseURI = appConfig.baseUrl();
     }
+
+
 }
